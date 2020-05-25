@@ -32,6 +32,9 @@ public class Controller {
     @FXML
     private CheckBox grayscale;
 
+    @FXML
+    private CheckBox sobel;
+
     private VideoCapture capture;
     private boolean cameraActive;
 
@@ -41,6 +44,27 @@ public class Controller {
     {
         this.capture = new VideoCapture();
         this.cameraActive = false;
+    }
+
+    private void writeAsSobel(Mat frame)
+    {
+        Mat grayMat = new Mat();
+        Mat sobel = new Mat(); //Mat to store the final result
+
+        Mat grad_x = new Mat();
+        Mat abs_grad_x = new Mat();
+
+        Mat grad_y = new Mat();
+        Mat abs_grad_y = new Mat();
+
+        Imgproc.cvtColor(frame, grayMat, Imgproc.COLOR_BGR2GRAY);
+        Imgproc.Sobel(grayMat, grad_x, CvType.CV_16S, 1, 0, 3, 1, 0);
+        Imgproc.Sobel(grayMat, grad_y, CvType.CV_16S, 0, 1, 3, 1, 0);
+        Core.convertScaleAbs(grad_x, abs_grad_x);
+        Core.convertScaleAbs(grad_y, abs_grad_y);
+        Core.addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 1, sobel);
+
+        updateCurrentImage(matAsImage(sobel));
     }
 
     private void writeHistogram(Mat frame)
@@ -146,7 +170,7 @@ public class Controller {
     protected void startCamera(ActionEvent event) {
         if (!this.cameraActive)
         {
-            this.capture.open();
+            this.capture.open("https://file-examples.com/wp-content/uploads/2017/04/file_example_MP4_480_1_5MG.mp4");
 
             if (this.capture.isOpened())
             {
@@ -160,6 +184,10 @@ public class Controller {
 
                         updateCurrentImage(imageToShow);
                         writeHistogram(frame);
+
+                        if (sobel.isSelected()) {
+                            writeAsSobel(frame);
+                        }
                     }
                 };
 

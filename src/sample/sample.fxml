@@ -19,6 +19,7 @@
          <ImageView fx:id="histogram" fitHeight="187.0" fitWidth="208.0" pickOnBounds="true" preserveRatio="true" />
          <Text text="Controls" />
          <CheckBox fx:id="grayscale" text="Show in gray scale" />
+         <CheckBox fx:id="sobel" text="Show in sobel derivation" />
       </VBox>
    </right>
    <bottom>
